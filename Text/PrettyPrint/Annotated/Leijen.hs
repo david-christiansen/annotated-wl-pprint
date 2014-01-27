@@ -607,7 +607,7 @@ data SimpleDoc a  = SEmpty
                | SLine !Int (SimpleDoc a)
                | SAnnotStart a (SimpleDoc a)
                | SAnnotStop (SimpleDoc a)
-
+  deriving Functor
 
 -- | The empty document is, indeed, empty. Although @empty@ has no
 -- content, it does have a \'height\' of 1 and behaves exactly like
@@ -839,7 +839,7 @@ displaySpans sd = display 0 [] sd
         display i stk                (SChar c x)         = let (str, spans) = display (i+1) stk x
                                                            in (c:str, spans)
         display i stk                (SText l s x)       = mapFst (s++) (display (i + l) stk x)
-        display i stk                (SLine ind x)       = mapFst (('\n':indentation ind)++) (display (i+ind) stk x)
+        display i stk                (SLine ind x)       = mapFst (('\n':indentation ind)++) (display (1+i+ind) stk x)
         display i stk                (SAnnotStart ann x) = display i ((i, ann):stk) x
         display i ((start, ann):stk) (SAnnotStop x)      = mapSnd ((start, i-start, ann):) (display i stk x)
 
