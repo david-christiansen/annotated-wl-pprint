@@ -44,7 +44,7 @@ module Text.PrettyPrint.Annotated.Leijen (
   annotate, noAnnotate,
 
   -- * Rendering
-  SimpleDoc(..), renderPretty, renderCompact, displayDecorated, displayS, displayIO
+  SimpleDoc(..), renderPretty, renderCompact, displayDecorated, displayS, displayIO, displaySpans
 
   -- * Undocumented
 
@@ -830,6 +830,7 @@ displayIO handle simpleDoc
      display (SAnnotStart _ x) = display x
      display (SAnnotStop x)    = display x
 
+-- | Generate a pair of a string and a list of source span/annotation pairs
 displaySpans :: SimpleDoc a -> (String, SpanList a)
 displaySpans sd = display 0 [] sd
   where display :: Int -> [(Int, a)] -> SimpleDoc a -> (String, SpanList a)
