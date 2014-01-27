@@ -1,6 +1,6 @@
 Name:                annotated-wl-pprint
-Version:             0.5
-Cabal-Version:       >= 1.4
+Version:             0.5.1
+Cabal-Version:       >= 1.6
 Synopsis:            The Wadler/Leijen Pretty Printer, with annotation support
 Category:            Text
 Description:
@@ -12,9 +12,14 @@ License:             BSD3
 License-file:        LICENSE
 Author:              Daan Leijen, David Raymond Christiansen
 Maintainer:          david@davidchristiansen.dk
+Homepage:            https://github.com/david-christiansen/annotated-wl-pprint
 Build-Type:          Simple
 Library
         Build-Depends:       base < 5
         Exposed-Modules:     Text.PrettyPrint.Annotated.Leijen
         Extensions:          DeriveFunctor, OverlappingInstances
         Ghc-options:         -fwarn-incomplete-patterns
+Source-Repository head
+        type:        git
+        location:    https://github.com/david-christiansen/annotated-wl-pprint
+
