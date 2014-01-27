@@ -44,7 +44,8 @@ module Text.PrettyPrint.Annotated.Leijen (
   annotate, noAnnotate,
 
   -- * Rendering
-  SimpleDoc(..), renderPretty, renderCompact, displayDecorated, displayS, displayIO, displaySpans
+  SimpleDoc(..), renderPretty, renderCompact, displayDecorated, displayS, displayIO,
+  SpanList(..), displaySpans
 
   -- * Undocumented
 

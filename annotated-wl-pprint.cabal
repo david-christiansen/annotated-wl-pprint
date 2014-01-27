@@ -1,5 +1,5 @@
 Name:                annotated-wl-pprint
-Version:             0.5.1
+Version:             0.5.2
 Cabal-Version:       >= 1.6
 Synopsis:            The Wadler/Leijen Pretty Printer, with annotation support
 Category:            Text
