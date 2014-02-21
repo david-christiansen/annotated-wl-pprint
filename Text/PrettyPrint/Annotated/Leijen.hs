@@ -174,12 +174,12 @@ sep             = group . vsep
 -- inserts a @line@ and continues doing that for all documents in
 -- @xs@.
 --
--- > fillSep xs  = foldr (\<\/\>) empty xs
+-- > fillSep xs  = foldr (</>) empty xs
 fillSep :: [Doc a] -> Doc a
 fillSep         = fold (</>)
 
 -- | The document @(hsep xs)@ concatenates all documents @xs@
--- horizontally with @(\<+\>)@.
+-- horizontally with ('<+>').
 hsep :: [Doc a] -> Doc a
 hsep            = fold (<+>)
 
