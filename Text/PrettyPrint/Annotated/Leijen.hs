@@ -54,10 +54,14 @@ module Text.PrettyPrint.Annotated.Leijen (
 ) where
 
 import System.IO (Handle,hPutStr,hPutChar,stdout)
+import Data.String
 
 infixr 5 </>,<//>,<$>,<$$>
 infixr 6 <>,<+>
 
+
+instance IsString (Doc a) where
+    fromString = text
 
 -----------------------------------------------------------
 -- list, tupled and semiBraces pretty print a list of
