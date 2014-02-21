@@ -19,9 +19,9 @@ module Text.PrettyPrint.Annotated.Leijen (
   -- for let expressions is fine.
   align, hang, indent, encloseSep, list, tupled, semiBraces,
   -- * Operators
-  (<+>), (<$>), (</>), (<$$>), (<//>),
+  (<+>), (<$>), (</>), (<$$>), (<//>), (<->),
   -- * List combinators
-  hsep, vsep, fillSep, sep, hcat, vcat, fillCat, cat, punctuate,
+  hsep, hsep1, vsep, fillSep, sep, hcat, vcat, fillCat, cat, punctuate,
 
   -- * Fillers
   fill, fillBreak,
@@ -179,6 +179,10 @@ fillSep         = fold (</>)
 hsep :: [Doc a] -> Doc a
 hsep            = fold (<+>)
 
+
+-- | Concatenates the documents like 'hsep', but uses ('<->').
+hsep1 :: [Doc a] -> Doc a
+hsep1            = fold (<->)
 
 -- | The document @(vsep xs)@ concatenates all documents @xs@
 -- vertically with @(\<$\>)@. If a 'group' undoes the line breaks
@@ -591,7 +595,53 @@ data Doc a     = Empty
                | Annotate a (Doc a) -- The contained document, annotated by the info
                | AnnotEnd           -- Only used during rendering - indicates the end of an annotation
   deriving Functor
+
+{- -- for debugging
+  deriving (Functor,Show)
+
+instance Show a => Show (Int -> Doc a) where
+  show f = show (f 0)
+-}
+
 type SpanList a = [(Int, Int, a)]
+
+data Dir = L | R
+
+rmSpace :: Dir -> Doc a -> Doc a
+rmSpace dir = go
+  where
+    go e0 = case e0 of
+        Line False -> Line True
+        Cat a b -> case dir of
+            L -> mkCat (go a) b
+            R -> mkCat a (go b)
+
+        Nest i d -> Nest i (go d) -- ?
+        Union a b -> Union (go a) (go b)
+        Column f -> Column (go . f)
+        Nesting f -> Nesting (go . f)
+        Annotate x d -> Annotate x (go d)
+
+        -- boring
+        Line b -> Line b
+        Empty -> Empty
+        Char ' ' -> Empty
+        Char c -> Char c
+        Text n s -> case dir of
+            L -> Text n (dropWhile (== ' ') s)
+            R -> Text n (dropFromEnd (== ' ') s)
+        AnnotEnd -> AnnotEnd
+
+
+dropFromEnd p = reverse . dropWhile p . reverse
+
+-- | Ensures there is exactly /one/ space between the documents.
+--
+-- Linear in the depth of the documents, so might become inefficient for
+-- huge documents.
+(<->) :: Doc a -> Doc a -> Doc a
+d1 <-> d2 = rmSpace R d1 `beside` space `beside` rmSpace L d2
+
 
 -- | The data type @SimpleDoc a@ represents rendered documents and is
 -- used by the display functions.
@@ -642,7 +692,12 @@ line            = Line False
 linebreak :: Doc a
 linebreak       = Line True
 
-beside x y      = Cat x y
+beside x y      = mkCat x y
+
+mkCat :: Doc a -> Doc a -> Doc a
+mkCat Empty d = d
+mkCat d Empty = d
+mkCat d1 d2   = Cat d1 d2
 
 -- | The document @(nest i x)@ renders document @x@ with the current
 -- indentation level increased by i (See also 'hang', 'align' and
@@ -673,7 +728,7 @@ group :: Doc a -> Doc a
 group x         = Union (flatten x) x
 
 flatten :: Doc a -> Doc a
-flatten (Cat x y)       = Cat (flatten x) (flatten y)
+flatten (Cat x y)       = mkCat (flatten x) (flatten y)
 flatten (Nest i x)      = Nest i (flatten x)
 flatten (Line break)    = if break then Empty else Text 1 " "
 flatten (Union x y)     = flatten x
@@ -692,7 +747,7 @@ annotate = Annotate
 -- textual formatting of some sub-document, but applying a different
 -- high-level annotation.
 noAnnotate :: Doc a -> Doc a
-noAnnotate (Cat x y) = Cat (noAnnotate x) (noAnnotate y)
+noAnnotate (Cat x y) = mkCat (noAnnotate x) (noAnnotate y)
 noAnnotate (Nest i x) = Nest i (noAnnotate x)
 noAnnotate (Union x y) = Union (noAnnotate x) (noAnnotate y)
 noAnnotate (Column f) = Column (noAnnotate . f)
