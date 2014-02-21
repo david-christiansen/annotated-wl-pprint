@@ -44,7 +44,7 @@ module Text.PrettyPrint.Annotated.Leijen (
   annotate, noAnnotate,
 
   -- * Rendering
-  SimpleDoc(..), renderPretty, renderCompact, displayDecorated, displayS, displayIO,
+  SimpleDoc(..), renderPretty, renderCompact, displayDecorated, display, displayS, displayIO,
   SpanList(..), displaySpans
 
   -- * Undocumented
@@ -853,9 +853,12 @@ renderCompact x
 
 
 -----------------------------------------------------------
--- Displayers:  displayS and displayIO
+-- Displayers:  displayS and displayIO (and display)
 -----------------------------------------------------------
 
+-- | @(display simpleDoc)@ transforms the @simpleDoc@ to a 'String'.
+display :: SimpleDoc a -> String
+display = flip displayS ""
 
 -- | @(displayS simpleDoc a)@ takes the output @simpleDoc a@ from a
 -- rendering function and transforms it to a 'ShowS' type (for use in
