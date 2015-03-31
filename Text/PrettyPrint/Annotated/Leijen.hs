@@ -54,6 +54,7 @@ module Text.PrettyPrint.Annotated.Leijen (
 ) where
 
 import System.IO (Handle,hPutStr,hPutChar,stdout)
+import Prelude hiding ((<$>))
 
 infixr 5 </>,<//>,<$>,<$$>
 infixr 6 <>,<+>
