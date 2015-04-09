@@ -44,7 +44,7 @@ module Text.PrettyPrint.Annotated.Leijen (
   annotate, noAnnotate,
 
   -- * Rendering
-  SimpleDoc(..), renderPretty, renderCompact, displayDecorated, displayS, displayIO,
+  SimpleDoc(..), renderPretty, renderCompact, displayDecorated, display, displayS, displayIO,
   SpanList(..), displaySpans
 
   -- * Undocumented
@@ -54,11 +54,19 @@ module Text.PrettyPrint.Annotated.Leijen (
 ) where
 
 import System.IO (Handle,hPutStr,hPutChar,stdout)
-import Prelude hiding ((<$>))
+import Data.String
+
+import Prelude ((.), ($), (/=), (<), (<=), (>), (>=), (-), (*), (+), (++),
+                Bool(..), Char, Double, Float, Functor, Int, Integer, IO, Rational, Show, ShowS,
+                id, error, flip, foldr1, fromIntegral, length, max, min, otherwise, repeat, replicate,
+                return, round, seq, show, showChar, showString, showsPrec, span, zipWith)
 
 infixr 5 </>,<//>,<$>,<$$>
 infixr 6 <>,<+>
 
+
+instance IsString (Doc a) where
+    fromString = text
 
 -----------------------------------------------------------
 -- list, tupled and semiBraces pretty print a list of
@@ -171,12 +179,12 @@ sep             = group . vsep
 -- inserts a @line@ and continues doing that for all documents in
 -- @xs@.
 --
--- > fillSep xs  = foldr (\<\/\>) empty xs
+-- > fillSep xs  = foldr (</>) empty xs
 fillSep :: [Doc a] -> Doc a
 fillSep         = fold (</>)
 
 -- | The document @(hsep xs)@ concatenates all documents @xs@
--- horizontally with @(\<+\>)@.
+-- horizontally with ('<+>').
 hsep :: [Doc a] -> Doc a
 hsep            = fold (<+>)
 
@@ -799,9 +807,12 @@ renderCompact x
 
 
 -----------------------------------------------------------
--- Displayers:  displayS and displayIO
+-- Displayers:  displayS and displayIO (and display)
 -----------------------------------------------------------
 
+-- | @(display simpleDoc)@ transforms the @simpleDoc@ to a 'String'.
+display :: SimpleDoc a -> String
+display = flip displayS ""
 
 -- | @(displayS simpleDoc a)@ takes the output @simpleDoc a@ from a
 -- rendering function and transforms it to a 'ShowS' type (for use in
