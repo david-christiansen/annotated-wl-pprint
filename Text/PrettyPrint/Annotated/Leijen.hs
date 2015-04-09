@@ -56,7 +56,10 @@ module Text.PrettyPrint.Annotated.Leijen (
 import System.IO (Handle,hPutStr,hPutChar,stdout)
 import Data.String
 
-import Prelude hiding ((<$>))
+import Prelude ((.), ($), (/=), (<), (<=), (>), (>=), (-), (*), (+), (++),
+                Bool(..), Char, Double, Float, Functor, Int, Integer, IO, Rational, Show, ShowS,
+                id, error, flip, foldr1, fromIntegral, length, max, min, otherwise, repeat, replicate,
+                return, round, seq, show, showChar, showString, showsPrec, span, zipWith)
 
 infixr 5 </>,<//>,<$>,<$$>
 infixr 6 <>,<+>
