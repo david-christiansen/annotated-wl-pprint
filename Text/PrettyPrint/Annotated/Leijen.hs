@@ -56,6 +56,7 @@ module Text.PrettyPrint.Annotated.Leijen (
 import System.IO (Handle,hPutStr,hPutChar,stdout)
 import Data.String
 
+-- Import Prelude names by hand, because "import Prelude hiding ((<$>)) fails on GHC 7.4
 import Prelude ((.), ($), (/=), (<), (<=), (>), (>=), (-), (*), (+), (++),
                 Bool(..), Char, Double, Float, Functor, Int, Integer, IO, Rational, Show, ShowS,
                 id, error, flip, foldr1, fromIntegral, length, max, min, otherwise, repeat, replicate,
