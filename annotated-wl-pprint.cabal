@@ -17,7 +17,7 @@ Build-Type:          Simple
 Library
         Build-Depends:       base < 5
         Exposed-Modules:     Text.PrettyPrint.Annotated.Leijen
-        Extensions:          DeriveFunctor, OverlappingInstances
+        Extensions:          DeriveFunctor
         Ghc-options:         -fwarn-incomplete-patterns
 Source-Repository head
         type:        git
