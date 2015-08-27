@@ -44,7 +44,7 @@ module Text.PrettyPrint.Annotated.Leijen (
   annotate, noAnnotate,
 
   -- * Rendering
-  SimpleDoc(..), renderPretty, renderCompact, displayDecorated, display, displayS, displayIO,
+  SimpleDoc(..), renderPretty, renderCompact, displayDecorated, displayDecoratedA, display, displayS, displayIO,
   SpanList(..), displaySpans
 
   -- * Undocumented
@@ -61,6 +61,9 @@ import Prelude ((.), ($), (/=), (<), (<=), (>), (>=), (-), (*), (+), (++),
                 Bool(..), Char, Double, Float, Functor, Int, Integer, IO, Rational, Show, ShowS,
                 id, error, flip, foldr1, fromIntegral, length, max, min, otherwise, repeat, replicate,
                 return, round, seq, show, showChar, showString, showsPrec, span, zipWith)
+
+import Control.Applicative (Applicative(..), liftA2)
+import Data.Monoid (Monoid(..))
 
 infixr 5 </>,<//>,<$>,<$$>
 infixr 6 <>,<+>
@@ -880,6 +883,22 @@ displayDecorated decor sd = display id id [] sd ""
         display _ _ [] (SAnnotStop _) = error "stack underflow"
         display _ _ stk SEmpty = error "stack not consumed by rendering"
 
+displayDecoratedA :: (Applicative f, Monoid b)
+                  => (String -> f b) -> (a -> f b) -> (a -> f b)
+                  -> SimpleDoc a -> f b
+displayDecoratedA str start end sd = display [] sd
+  where display []        SEmpty              = pure mempty
+        display stk       (SChar c x)         = (str [c]) <++> (display stk x)
+        display stk       (SText l s x)       = (str s) <++> (display stk x)
+        display stk       (SLine ind x)       = (str ('\n':indentation ind)) <++> (display stk x)
+        display stk       (SAnnotStart ann x) = (start ann) <++> (display (ann:stk) x)
+        display (ann:stk) (SAnnotStop x)      = (end ann) <++> (display stk x)
+
+        -- malformed documents
+        display []        (SAnnotStop _)      = error "stack underflow"
+        display stk       SEmpty              = error "stack not consumed by rendering"
+
+        (<++>) = liftA2 mappend
 
 -----------------------------------------------------------
 -- default pretty printers: show, putDoc and hPutDoc
