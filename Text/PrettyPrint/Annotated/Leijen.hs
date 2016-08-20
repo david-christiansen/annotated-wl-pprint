@@ -1,4 +1,4 @@
-{-# LANGUAGE CPP #-}
+{-# LANGUAGE CPP, DeriveFunctor #-}
 module Text.PrettyPrint.Annotated.Leijen (
   -- * Documents, parametrized by their annotations
   Doc, putDoc, hPutDoc,

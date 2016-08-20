@@ -19,7 +19,6 @@ Library
         Exposed-Modules:
           Text.PrettyPrint.Annotated.Leijen
           Text.PrettyPrint.Annotated.Modern
-        Extensions:          DeriveFunctor
         Ghc-options:         -fwarn-incomplete-patterns
 Source-Repository head
         type:        git
