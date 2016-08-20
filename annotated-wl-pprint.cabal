@@ -16,7 +16,9 @@ Homepage:            https://github.com/david-christiansen/annotated-wl-pprint
 Build-Type:          Simple
 Library
         Build-Depends:       base < 5
-        Exposed-Modules:     Text.PrettyPrint.Annotated.Leijen
+        Exposed-Modules:
+          Text.PrettyPrint.Annotated.Leijen
+          Text.PrettyPrint.Annotated.Modern
         Extensions:          DeriveFunctor
         Ghc-options:         -fwarn-incomplete-patterns
 Source-Repository head

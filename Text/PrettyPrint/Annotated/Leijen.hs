@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 module Text.PrettyPrint.Annotated.Leijen (
   -- * Documents, parametrized by their annotations
   Doc, putDoc, hPutDoc,
@@ -65,9 +66,20 @@ import Prelude ((.), ($), (/=), (<), (<=), (>), (>=), (-), (*), (+), (++),
 import Control.Applicative (Applicative(..), liftA2)
 import Data.Monoid (Monoid(..))
 
-infixr 5 </>,<//>,<$>,<$$>
-infixr 6 <>,<+>
+#if MIN_VERSION_base(4,9,0)
+import Data.Semigroup (Semigroup((<>)))
 
+instance Semigroup (Doc a)
+#else
+infixr 6 <>
+#endif
+
+infixr 5 </>,<//>,<$>,<$$>
+infixr 6 <+>
+
+instance Monoid (Doc a) where
+    mempty = empty
+    mappend = beside
 
 instance IsString (Doc a) where
     fromString = text
@@ -256,11 +268,13 @@ vcat            = fold (<$$>)
 fold f []       = empty
 fold f ds       = foldr1 f ds
 
+#if !MIN_VERSION_base(4,9,0)
 -- | The document @(x \<\> y)@ concatenates document @x@ and document
 -- @y@. It is an associative operation having 'empty' as a left and
 -- right unit.  (infixr 6)
 (<>) :: Doc a -> Doc a -> Doc a
 x <> y          = x `beside` y
+#endif
 
 -- | The document @(x \<+\> y)@ concatenates document @x@ and @y@ with a
 -- @space@ in between.  (infixr 6)
