@@ -1,4 +1,4 @@
-module Text.PrettyPrint.Annotated.Modern (
+module Text.PrettyPrint.Annotated.Leijen.Modern (
   module X,
   (<#>),
   (<##>)

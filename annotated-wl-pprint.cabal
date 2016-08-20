@@ -18,7 +18,7 @@ Library
         Build-Depends:       base < 5
         Exposed-Modules:
           Text.PrettyPrint.Annotated.Leijen
-          Text.PrettyPrint.Annotated.Modern
+          Text.PrettyPrint.Annotated.Leijen.Modern
         Ghc-options:         -fwarn-incomplete-patterns
 Source-Repository head
         type:        git
