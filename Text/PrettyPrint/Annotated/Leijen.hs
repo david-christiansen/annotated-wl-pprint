@@ -46,7 +46,7 @@ module Text.PrettyPrint.Annotated.Leijen (
 
   -- * Rendering
   SimpleDoc(..), renderPretty, renderCompact, displayDecorated, displayDecoratedA, display, displayS, displayIO,
-  SpanList(..), displaySpans
+  SpanList, displaySpans
 
   -- * Undocumented
 
@@ -265,6 +265,7 @@ hcat            = fold (<>)
 vcat :: [Doc a] -> Doc a
 vcat            = fold (<$$>)
 
+fold :: (Doc a -> Doc a -> Doc a) -> [Doc a] -> Doc a
 fold f []       = empty
 fold f ds       = foldr1 f ds
 
@@ -669,6 +670,7 @@ line            = Line False
 linebreak :: Doc a
 linebreak       = Line True
 
+beside :: Doc a -> Doc a -> Doc a
 beside x y      = Cat x y
 
 -- | The document @(nest i x)@ renders document @x@ with the current
@@ -783,7 +785,7 @@ renderPretty rfrac w x
                        where
                          width = min (w - k) (r - k + n)
 
-
+fits :: Int -> SimpleDoc t -> Bool
 fits w x        | w < 0         = False
 fits w SEmpty                   = True
 fits w (SChar c x)              = fits (w - 1) x
@@ -954,9 +956,11 @@ hPutDoc handle doc      = displayIO handle (renderPretty 0.4 80 doc)
 -- "indentation" used to insert tabs but tabs seem to cause
 -- more trouble than they solve :-)
 -----------------------------------------------------------
+spaces :: Int -> String
 spaces n       | n <= 0    = ""
                | otherwise = replicate n ' '
 
+indentation :: Int -> String
 indentation n   = spaces n
 
 --indentation n   | n >= 8    = '\t' : indentation (n-8)
