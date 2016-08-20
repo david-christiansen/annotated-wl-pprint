@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP, DeriveFunctor #-}
 module Text.PrettyPrint.Annotated.Leijen (
   -- * Documents, parametrized by their annotations
   Doc, putDoc, hPutDoc,
@@ -45,7 +46,7 @@ module Text.PrettyPrint.Annotated.Leijen (
 
   -- * Rendering
   SimpleDoc(..), renderPretty, renderCompact, displayDecorated, displayDecoratedA, display, displayS, displayIO,
-  SpanList(..), displaySpans
+  SpanList, displaySpans
 
   -- * Undocumented
 
@@ -65,9 +66,20 @@ import Prelude ((.), ($), (/=), (<), (<=), (>), (>=), (-), (*), (+), (++),
 import Control.Applicative (Applicative(..), liftA2)
 import Data.Monoid (Monoid(..))
 
-infixr 5 </>,<//>,<$>,<$$>
-infixr 6 <>,<+>
+#if MIN_VERSION_base(4,9,0)
+import Data.Semigroup (Semigroup((<>)))
 
+instance Semigroup (Doc a)
+#else
+infixr 6 <>
+#endif
+
+infixr 5 </>,<//>,<$>,<$$>
+infixr 6 <+>
+
+instance Monoid (Doc a) where
+    mempty = empty
+    mappend = beside
 
 instance IsString (Doc a) where
     fromString = text
@@ -253,14 +265,17 @@ hcat            = fold (<>)
 vcat :: [Doc a] -> Doc a
 vcat            = fold (<$$>)
 
+fold :: (Doc a -> Doc a -> Doc a) -> [Doc a] -> Doc a
 fold f []       = empty
 fold f ds       = foldr1 f ds
 
+#if !MIN_VERSION_base(4,9,0)
 -- | The document @(x \<\> y)@ concatenates document @x@ and document
 -- @y@. It is an associative operation having 'empty' as a left and
 -- right unit.  (infixr 6)
 (<>) :: Doc a -> Doc a -> Doc a
 x <> y          = x `beside` y
+#endif
 
 -- | The document @(x \<+\> y)@ concatenates document @x@ and @y@ with a
 -- @space@ in between.  (infixr 6)
@@ -655,6 +670,7 @@ line            = Line False
 linebreak :: Doc a
 linebreak       = Line True
 
+beside :: Doc a -> Doc a -> Doc a
 beside x y      = Cat x y
 
 -- | The document @(nest i x)@ renders document @x@ with the current
@@ -769,7 +785,7 @@ renderPretty rfrac w x
                        where
                          width = min (w - k) (r - k + n)
 
-
+fits :: Int -> SimpleDoc t -> Bool
 fits w x        | w < 0         = False
 fits w SEmpty                   = True
 fits w (SChar c x)              = fits (w - 1) x
@@ -940,9 +956,11 @@ hPutDoc handle doc      = displayIO handle (renderPretty 0.4 80 doc)
 -- "indentation" used to insert tabs but tabs seem to cause
 -- more trouble than they solve :-)
 -----------------------------------------------------------
+spaces :: Int -> String
 spaces n       | n <= 0    = ""
                | otherwise = replicate n ' '
 
+indentation :: Int -> String
 indentation n   = spaces n
 
 --indentation n   | n >= 8    = '\t' : indentation (n-8)
