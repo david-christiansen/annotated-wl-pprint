@@ -60,7 +60,7 @@ import Data.String
 import Prelude ((.), ($), (/=), (<), (<=), (>), (>=), (-), (*), (+), (++),
                 Bool(..), Char, Double, Float, Functor, Int, Integer, IO, Rational, Show, ShowS,
                 id, error, flip, foldr1, fromIntegral, length, max, min, otherwise, repeat, replicate,
-                return, round, seq, show, showChar, showString, showsPrec, span, zipWith)
+                return, round, seq, String, show, showChar, showString, showsPrec, span, zipWith)
 
 import Control.Applicative (Applicative(..), liftA2)
 import Data.Monoid (Monoid(..))
